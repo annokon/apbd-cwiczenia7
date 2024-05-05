@@ -56,12 +56,14 @@ public class WarehouseController : ControllerBase
             return NotFound("Nie istnieje zamówienie zakupu produktu.");
         }
 
-        reader.Read(); // Dodajemy odczyt
+        reader.Read();
+        int orderId = reader.GetInt32(0);
+        reader.Close();
 
         // Aktualizujemy kolumnę FullfilledAt zamówienia na aktualną datę i godzinę
         command.CommandText = "UPDATE [Order] SET FulfilledAt = @FulfilledAt WHERE IdOrder = @IdOrder";
         command.Parameters.AddWithValue("@FulfilledAt", DateTime.Now);
-        command.Parameters.AddWithValue("@IdOrder", reader.GetInt32(0));
+        command.Parameters.AddWithValue("@IdOrder", orderId);
         command.ExecuteNonQuery();
 
         // Obliczamy cenę na podstawie ilości i ceny z tabeli Product
